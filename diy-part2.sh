@@ -16,3 +16,7 @@ sed -i "s|zonename='UTC'|zonename='Asia/Shanghai'|g" package/base-files/files/bi
 
 # Set argon as default theme
 sed -i 's/bootstrap/argon/g' feeds/luci/collections/luci/Makefile 2>/dev/null || true
+
+# Remove problematic packages (toolchain incompatible)
+rm -rf feeds/passwall_packages/geoview
+rm -rf feeds/passwall_packages/shadowsocks-rust
