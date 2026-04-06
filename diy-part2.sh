@@ -17,6 +17,19 @@ sed -i "s|zonename='UTC'|zonename='Asia/Shanghai'|g" package/base-files/files/bi
 # Set argon as default theme
 sed -i 's/bootstrap/argon/g' feeds/luci/collections/luci/Makefile 2>/dev/null || true
 
-# Remove problematic packages (toolchain incompatible)
-rm -rf feeds/passwall_packages/geoview
-rm -rf feeds/passwall_packages/shadowsocks-rust
+# Remove ALL Go packages from passwall_packages that we don't need
+# Keep only: chinadns-ng, dns2socks, ipt2socks, microsocks, tcping,
+#            shadowsocks-libev, simple-obfs (these are C-based, compile fine)
+# xray-core and sing-box come from the feed too but need Go - keep them,
+# they should work with Go 1.23
+cd feeds/passwall_packages
+for pkg in geoview shadowsocks-rust v2ray-plugin xray-plugin hysteria \
+           naiveproxy shadow-tls tuic-client trojan-plus shadowsocksr-libev \
+           v2ray-geodata; do
+    [ -d "$pkg" ] && rm -rf "$pkg" && echo "Removed: $pkg"
+done
+cd ../..
+
+# Also ensure sing-box and xray-core will build - check Go compat
+echo "=== Remaining passwall packages ==="
+ls feeds/passwall_packages/
