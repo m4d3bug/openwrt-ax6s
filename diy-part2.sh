@@ -17,11 +17,7 @@ sed -i "s|zonename='UTC'|zonename='Asia/Shanghai'|g" package/base-files/files/bi
 # Set argon as default theme
 sed -i 's/bootstrap/argon/g' feeds/luci/collections/luci/Makefile 2>/dev/null || true
 
-# Remove ALL Go packages from passwall_packages that we don't need
-# Keep only: chinadns-ng, dns2socks, ipt2socks, microsocks, tcping,
-#            shadowsocks-libev, simple-obfs (these are C-based, compile fine)
-# xray-core and sing-box come from the feed too but need Go - keep them,
-# they should work with Go 1.23
+# Remove incompatible Go packages from passwall_packages
 cd feeds/passwall_packages
 for pkg in geoview shadowsocks-rust v2ray-plugin xray-plugin hysteria \
            naiveproxy shadow-tls tuic-client trojan-plus shadowsocksr-libev \
@@ -30,6 +26,10 @@ for pkg in geoview shadowsocks-rust v2ray-plugin xray-plugin hysteria \
 done
 cd ../..
 
-# Also ensure sing-box and xray-core will build - check Go compat
+# Remove geoview from passwall2 dependencies (it's a hard dep we can't build)
+sed -i 's/+geoview//g' feeds/passwall2/luci-app-passwall2/Makefile
+echo "=== passwall2 deps after patch ==="
+grep "DEPENDS" feeds/passwall2/luci-app-passwall2/Makefile | head -5
+
 echo "=== Remaining passwall packages ==="
 ls feeds/passwall_packages/
