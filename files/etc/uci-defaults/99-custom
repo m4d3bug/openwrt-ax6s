@@ -1,0 +1,8 @@
+#!/bin/sh
+# First-boot customization
+
+# Set DNS
+uci set network.lan.dns='127.0.0.1'
+uci commit network
+
+exit 0
